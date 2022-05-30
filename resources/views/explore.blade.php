@@ -10,7 +10,7 @@
                 >
             </a>
             <a href="{{ route('profile', $user->username) }}"
-               class="font-bold">{{'@' . $user->name }}
+               class="font-bold">{{'@' . $user->username }}
             </a>
         </div>
     @empty
