@@ -10,7 +10,7 @@
                  class="rounded-full mr-2"
                  width="60"
             >
-            <div class="font-bold">{{ $followee->username }}</div>
+            <div class="font-bold test">{{ $followee->username }}</div>
         </a>
     @empty
         <p class="pt-2 font-bold">No followees jet.</p>
