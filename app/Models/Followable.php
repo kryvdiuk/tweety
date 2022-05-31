@@ -16,11 +16,19 @@ trait Followable
 
     public function follow(User $user): Model
     {
+        if (!auth()->check()) {
+            abort(403);
+        }
+
         return $this->followees()->save($user);
     }
 
     public function unfollow(User $user): int
     {
+        if (!auth()->check()) {
+            abort(403);
+        }
+
         return $this->followees()->detach($user);
     }
 

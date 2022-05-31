@@ -13,6 +13,10 @@ trait Likable
 
     public function dislike(): void
     {
+        if (!auth()->check()) {
+            abort(403);
+        }
+
         if ($this->isLikedBy(auth()->user())) {
             Like::where("user_id", "=", auth()->id())
                 ->where("tweet_id", "=", $this->id)
@@ -36,6 +40,10 @@ trait Likable
 
     public function like(): void
     {
+        if (!auth()->check()) {
+            abort(403);
+        }
+
         if ($this->isDislikedBy(auth()->user())) {
             Like::where("user_id", "=", auth()->id())
                 ->where("tweet_id", "=", $this->id)
