@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Tweet;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
 
 class TweetLikesController extends Controller
 {
@@ -35,24 +34,11 @@ class TweetLikesController extends Controller
         return back();
     }
 
-
-//    /**
-//     * Store a newly created resource in storage.
-//     *
-//     * @param  \Illuminate\Http\Request  $request
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function update(Tweet $tweet)
-//    {
-//        $tweet->like(null, false);
-//        return back();
-//    }
-
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return Response
+     * @param Tweet $tweet
+     * @return RedirectResponse
      */
     public function destroy(Tweet $tweet)
     {

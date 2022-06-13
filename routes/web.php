@@ -27,6 +27,9 @@ Route::middleware("auth")->group(function() {
     Route::post("/tweets/{tweet}/dislikes", "TweetLikesController@storeDislike");
     Route::delete("/tweets/{tweet}/likes", "TweetLikesController@destroy");
 
+    // Retweet
+    Route::post("/tweets/{tweet}/retweet", "TweetsRetweetController@store");
+
     Route::get("/explore", "ExploreController")->name('explore');
     Route::get("/profile/{user:username}", "ProfileController@index")->name("profile");
     Route::get("/profile/{user:username}/edit", "ProfileController@edit")->middleware('can:edit,user');

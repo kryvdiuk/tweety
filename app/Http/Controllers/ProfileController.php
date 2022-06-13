@@ -9,7 +9,7 @@ class ProfileController extends Controller
 {
     public function index(User $user)
     {
-        $tweets = $user->tweets()->paginate(10);
+        $tweets = $user->profileTimeline()->paginate(10);
         return view("profile.index", compact(["user", 'tweets']));
     }
 

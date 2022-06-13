@@ -14,7 +14,7 @@
         <div class="mb-2 justify-between items-center flex">
             <div>
                 <div class="font-bold text-2xl">{{ $user->name }}</div>
-                <div class="text-sm text-gray-600">Joined 1 month ago</div>
+                <div class="text-sm text-gray-600">Joined {{ $user->created_at->diffForHumans() }}</div>
             </div>
             <div class="flex">
                 @can("edit", $user)
