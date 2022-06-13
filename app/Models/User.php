@@ -54,7 +54,7 @@ class User extends Authenticatable
      */
     public function timeline(): mixed
     {
-        // TODO add retweets
+        // TODO add retweet
         $friendIds = $this->followees()->pluck("users.id");
 
         return Tweet::whereIn("user_id", $friendIds)
