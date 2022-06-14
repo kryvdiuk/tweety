@@ -40,7 +40,7 @@
             </div>
         </a>
         <div>
-            <div class="flex">
+            <div class="flex text-sm">
                 <div class="font-bold mb-2 mr-1 hover:underline">
                     <a href="{{ $tweet->user->path() }}">{{ $tweet->user->name }}</a>
                 </div>
@@ -51,7 +51,7 @@
                 <div class="text-gray-500 mr-2">
                     &#183;
                 </div>
-                <div class="hover:underline cursor-pointer">
+                <div class="hover:underline cursor-pointer text-gray-600">
                     {{ $tweet->created_at->diffForHumans() }}
                 </div>
             </div>

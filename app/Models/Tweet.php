@@ -13,6 +13,9 @@ class Tweet extends Model
     use HasFactory;
     use Likable;
 
+    /**
+     * @var array
+     */
     protected $guarded = [];
 
     /**
@@ -23,6 +26,9 @@ class Tweet extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsToMany
+     */
     public function retweets(): BelongsToMany
     {
         return $this
@@ -55,49 +61,84 @@ class Tweet extends Model
         return collect($followers);
     }
 
+    /**
+     * @param string $page
+     * @return string
+     */
     public function getRetweetTitle(string $page): string
     {
-        $result = '';
+        $result = "";
+        $count = 0;
         $followersByRetweetedTweet = $this->getFollowersByRetweetedTweet();
 
         if (
-            ($this->isRetweetedBy(auth()->user()) && $this->user_id !== auth()->id() && $page === "profile") ||
+            ($page === "profile" && $this->isRetweetedBy(auth()->user()) && $this->user_id !== auth()->id()) ||
             ($page === "home" && $this->isRetweetedBy(auth()->user()) && $this->user_id !== auth()->id())
         ) {
-            $result .= "<a class='font-bold hover:underline' href=" . auth()->user()->path() . ">";
-            $result .= "You";
-            $result .= "</a>";
+            $result = $this->getUserLinkForRetweet(
+                $result,
+                auth()->user()->path(),
+                "You",
+                $count
+            );
 
             if ($followersByRetweetedTweet->count() === 1) {
                 $result .= " and ";
-                $result .= "<a class='font-bold hover:underline' href=" . $followersByRetweetedTweet->first()->path() . ">";
-                $result .= $followersByRetweetedTweet->first()->name;
-                $result .= "</a>";
+                $result = $this->getUserLinkForRetweet(
+                    $result,
+                    $followersByRetweetedTweet->first()->path(),
+                    $followersByRetweetedTweet->first()->name,
+                    $count
+                );
             }
         }
 
         if ($followersByRetweetedTweet->count()) {
-            if ($this->isRetweetedBy(auth()->user())) {
+            if ($this->isRetweetedBy(auth()->user()) && $this->user_id !== auth()->id()) {
                 $result .= ', ';
             }
 
-            $result .= "<a class='font-bold hover:underline' href=" . $followersByRetweetedTweet->first()->path() . ">";
-            $result .= $followersByRetweetedTweet->first()->name;
-            $result .= "</a>";
-
-            if ($followersByRetweetedTweet->count() > 1 && !$this->isRetweetedBy(auth()->user())) {
+            $result = $this->getUserLinkForRetweet(
+                $result,
+                $followersByRetweetedTweet->first()->path(),
+                $followersByRetweetedTweet->first()->name,
+                $count
+            );
+            if (
+                ($followersByRetweetedTweet->count() > 1 && !$this->isRetweetedBy(auth()->user())) ||
+                ($followersByRetweetedTweet->count() === 1 && $this->isRetweetedBy(auth()->user())) ||
+                ($followersByRetweetedTweet->count() > 1 && $this->user_id === auth()->id())
+            ) {
                 $result .= ', ';
-                $result .= "<a class='font-bold hover:underline' href=" . $followersByRetweetedTweet->skip(1)->first()->path() . ">";
-                $result .= $followersByRetweetedTweet->skip(1)->first()->name;
-                $result .= "</a>";
+                $result = $this->getUserLinkForRetweet(
+                    $result,
+                    $followersByRetweetedTweet->skip(1)->first()->path(),
+                    $followersByRetweetedTweet->skip(1)->first()->name,
+                    $count
+                );
             }
 
-            $result .= " and others";
+            $result .= " and ". $this->retweets->count() - $count ." others";
         }
 
+        $result .= " retweeted";
+        return $result;
+    }
 
+    /**
+     * @param string $result
+     * @param string $link
+     * @param string $name
+     * @param int $count
+     * @return string
+     */
+    private function getUserLinkForRetweet(string $result, string $link, string $name, int &$count): string
+    {
+        $result .= "<a class='font-bold hover:underline' href=" . $link . ">";
+        $result .= $name;
+        $result .= "</a>";
 
-        $result .=" Retweeted";
+        $count++;
         return $result;
     }
 }
