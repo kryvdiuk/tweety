@@ -1,32 +1,34 @@
-<div class="px-2 pb-2 pt-2 {{ $loop->last ? ' ' : 'border-b-2'}} hover:bg-gray-100">
-    @if($tweet->retweets->count())
-        <div class="flex text-gray-500 text-xs cursor-pointer mb-2">
-            <button class="mr-2">
-                <svg height="16px"
-                         id="Layer_1"
-                         viewBox="0 0 100 100"
-                         width="16px"
-                         xml:space="preserve"
-                         xmlns="http://www.w3.org/2000/svg"
-                         xmlns:xlink="http://www.w3.org/1999/xlink"
-                    >
-                    <g class="fill-current">
-                        <defs>
-                            <rect height="100" id="SVGID_1_" width="100"/>
-                        </defs>
-                        <path d="M23.102,76.5c-1.854,0-3.361-1.514-3.361-3.372V45.664L5,45.657l20.029-21.924l20.037,21.931   H30.305v20.235h15.85L56.541,76.5H23.102z M95,54.344H80.254V26.872c0-1.859-1.508-3.372-3.361-3.372H43.461L53.84,34.101h15.847   v20.235l-14.751,0.008l20.035,21.928L95,54.344z"/>
-                    </g>
-                </svg>
-            </button>
-            <div class="font-bold  hover:underline">
-                @if($tweet->isRetweetedBy(auth()->user()))
-                    You
-                @else
-                    {{ $tweet->user->name }}
-                @endif
-                Retweeted
+@php
+    $followersByRetweetedTweet = $tweet->getFollowersByRetweetedTweet()
+@endphp
+        <div class="px-2 pb-2 pt-2 {{ $loop->last ? ' ' : 'border-b-2'}} hover:bg-gray-100">
+            @if($tweet->retweets->count())
+                @if(($page === "profile" && $tweet->isRetweetedBy(auth()->user()) && $tweet->user_id !== auth()->id()) ||
+                ($page === "home" && $tweet->isRetweetedBy(auth()->user())) ||
+                ($page === "home" && $followersByRetweetedTweet->count() !== 0))
+                <div class="flex text-gray-500 text-xs cursor-pointer mb-2">
+                <button class="mr-2">
+                    <svg height="16px"
+                             id="Layer_1"
+                             viewBox="0 0 100 100"
+                             width="16px"
+                             xml:space="preserve"
+                             xmlns="http://www.w3.org/2000/svg"
+                             xmlns:xlink="http://www.w3.org/1999/xlink"
+                        >
+                        <g class="fill-current">
+                            <defs>
+                                <rect height="100" id="SVGID_1_" width="100"/>
+                            </defs>
+                            <path d="M23.102,76.5c-1.854,0-3.361-1.514-3.361-3.372V45.664L5,45.657l20.029-21.924l20.037,21.931   H30.305v20.235h15.85L56.541,76.5H23.102z M95,54.344H80.254V26.872c0-1.859-1.508-3.372-3.361-3.372H43.461L53.84,34.101h15.847   v20.235l-14.751,0.008l20.035,21.928L95,54.344z"/>
+                        </g>
+                    </svg>
+                </button>
+                <div>
+                    {!! $tweet->getRetweetTitle($page) !!}
+                </div>
             </div>
-        </div>
+        @endif
     @endif
     <div class="flex flex-shrink">
         <a href="{{ $tweet->user->path() }}">

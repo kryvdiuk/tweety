@@ -13,10 +13,10 @@ class UserSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $me = User::factory()
-            ->hasTweets(10)
+            ->hasTweets(2)
             ->create([
                 'username' => 'kryvdiuk',
                 'name' => 'Mykhailo Kryvdiuk',
@@ -25,13 +25,14 @@ class UserSeeder extends Seeder
             ]);
 
         $johnDoe = User::factory()
-            ->hasTweets(5)
+            ->hasTweets(2)
             ->create([
                 'username' => 'j.doe',
                 'name' => 'John Doe',
                 'email' => 'john.doe@gmail.com',
                 'password' => Hash::make('123123123'),
             ]);
+
         auth()->login($johnDoe);
         foreach($me->tweets as $tweet) {
             $johnDoe->retweet($tweet);
@@ -39,20 +40,47 @@ class UserSeeder extends Seeder
         }
         auth()->logout();
 
+        $followers = User::factory()
+            ->count(10)
+            ->hasTweets(3)
+            ->create();
+
         $users = User::factory()
             ->count(10)
-            ->hasTweets(5)
+            ->hasTweets(1)
             ->create();
 
-        auth()->login($me, true);
+        foreach ($followers as $follower) {
+            auth()->login($follower);
+            foreach ($me->tweets as $tweet) {
+                $follower->retweet($tweet);
+            }
 
-        foreach($users as $user) {
-            $me->follow($user);
+            foreach ($users as $user) {
+                foreach ($user->tweets as $tweet) {
+                    $follower->retweet($tweet);
+                }
+            }
+            auth()->logout();
         }
 
-        User::factory()
-            ->count(10)
-            ->hasTweets(10)
-            ->create();
+        foreach($me->tweets as $tweet) {
+            foreach($users as $user) {
+                auth()->login($user);
+                $user->retweet($tweet);
+                auth()->logout();
+            }
+        }
+
+        auth()->login($me, true);
+        foreach($followers as $follower) {
+            $me->follow($follower);
+        }
+
+        foreach($users as $user) {
+            foreach($user->tweets as $tweet) {
+                $me->retweet($tweet);
+            }
+        }
     }
 }

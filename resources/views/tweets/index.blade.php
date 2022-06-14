@@ -3,7 +3,7 @@
         <form action="/tweets" method="POST">
             @csrf
 
-            <div class="rounded-lg border-2 border-blue-400 p-4 mb-6 shadow">
+            <div class="overflow-hidden rounded-lg border-2 border-blue-400 p-4 mb-6 shadow">
                 <textarea name="body"
                           placeholder="What's up doc?"
                           class="w-full resize-none outline-none">

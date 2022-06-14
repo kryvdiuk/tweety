@@ -1,6 +1,6 @@
-<div class="rounded-lg border-2">
+<div class="overflow-hidden rounded-lg border-2">
     @forelse($tweets as $tweet)
-        @include("_tweet")
+        @include("_tweet", ["page" => $page ?? "home"])
     @empty
         <p class="p-4 text-center">No tweets jet.</p>
     @endforelse
