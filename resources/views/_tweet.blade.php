@@ -1,34 +1,27 @@
-@php
-    $followersByRetweetedTweet = $tweet->getFollowersByRetweetedTweet()
-@endphp
-        <div class="px-2 pb-2 pt-2 {{ $loop->last ? ' ' : 'border-b-2'}} hover:bg-gray-100">
-            @if($tweet->retweets->count())
-                @if(($page === "profile" && $tweet->isRetweetedBy(auth()->user()) && $tweet->user_id !== auth()->id()) ||
-                ($page === "home" && $tweet->isRetweetedBy(auth()->user())) ||
-                ($page === "home" && $followersByRetweetedTweet->count() !== 0))
-                <div class="flex text-gray-500 text-xs cursor-pointer mb-2">
-                <button class="mr-2">
-                    <svg height="16px"
-                             id="Layer_1"
-                             viewBox="0 0 100 100"
-                             width="16px"
-                             xml:space="preserve"
-                             xmlns="http://www.w3.org/2000/svg"
-                             xmlns:xlink="http://www.w3.org/1999/xlink"
-                        >
-                        <g class="fill-current">
-                            <defs>
-                                <rect height="100" id="SVGID_1_" width="100"/>
-                            </defs>
-                            <path d="M23.102,76.5c-1.854,0-3.361-1.514-3.361-3.372V45.664L5,45.657l20.029-21.924l20.037,21.931   H30.305v20.235h15.85L56.541,76.5H23.102z M95,54.344H80.254V26.872c0-1.859-1.508-3.372-3.361-3.372H43.461L53.84,34.101h15.847   v20.235l-14.751,0.008l20.035,21.928L95,54.344z"/>
-                        </g>
-                    </svg>
-                </button>
-                <div>
-                    {!! $tweet->getRetweetTitle($page) !!}
-                </div>
+<div class="px-2 pb-2 pt-2 {{ $loop->last ? ' ' : 'border-b-2'}} hover:bg-gray-100">
+    @if($tweet->retweets->count())
+        <div class="flex text-gray-500 text-xs cursor-pointer mb-2">
+            <button class="mr-2">
+                <svg height="16px"
+                         id="Layer_1"
+                         viewBox="0 0 100 100"
+                         width="16px"
+                         xml:space="preserve"
+                         xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                    >
+                    <g class="fill-current">
+                        <defs>
+                            <rect height="100" id="SVGID_1_" width="100"/>
+                        </defs>
+                        <path d="M23.102,76.5c-1.854,0-3.361-1.514-3.361-3.372V45.664L5,45.657l20.029-21.924l20.037,21.931   H30.305v20.235h15.85L56.541,76.5H23.102z M95,54.344H80.254V26.872c0-1.859-1.508-3.372-3.361-3.372H43.461L53.84,34.101h15.847   v20.235l-14.751,0.008l20.035,21.928L95,54.344z"/>
+                    </g>
+                </svg>
+            </button>
+            <div>
+                {!! $tweet->getRetweetTitle() !!}
             </div>
-        @endif
+        </div>
     @endif
     <div class="flex flex-shrink">
         <a href="{{ $tweet->user->path() }}">
@@ -79,14 +72,14 @@
                         {{ $tweet->likes ? $tweet->likes()->count() : '0' }}
                     </div>
                 </div>
-                <div class="flex mr-3 {{ $tweet->isDislikedBy(auth()->user()) ? 'text-red-500': ''}}">
+                <div class="flex mr-3 {{ $tweet->isDislikedBy(auth()->user()) ? 'text-black': ''}}">
                     <form method="POST" action="/tweets/{{ $tweet->id }}/{{ $tweet->isDislikedBy(auth()->user()) ? 'likes' : 'dislikes' }}">
                         @csrf
                         @if($tweet->isDislikedBy(auth()->user()))
                             @method("DELETE")
                         @endif
                         <button>
-                            <svg viewBox="0 0 20 20" class="w-4 mr-1 hover:text-red-500">
+                            <svg viewBox="0 0 20 20" class="w-4 mr-1 hover:text-black">
                                 <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                     <g class="fill-current">
                                         <path d="M11.0010436,20 C9.89589787,20 9.00000024,19.1132936 9.0000002,18.0018986 L9,12 L1.9973917,12 C0.894262725,12 0,11.1122704 0,10 L0,8 L2.29663334,1.87564456 C2.68509206,0.839754676 3.90195042,8.52651283e-14 5.00853025,8.52651283e-14 L12.9914698,8.52651283e-14 C14.1007504,8.52651283e-14 15,0.88743329 15,1.99961498 L15,10 L12,17 L12,20 L11.0010436,20 L11.0010436,20 Z M17,10 L20,10 L20,0 L17,0 L17,10 L17,10 Z" id="Fill-97"></path>

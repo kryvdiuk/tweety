@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
+use Log;
+use phpDocumentor\Reflection\DocBlock\Tags\Author;
 
 class Tweet extends Model
 {
@@ -62,63 +64,37 @@ class Tweet extends Model
     }
 
     /**
-     * @param string $page
      * @return string
      */
-    public function getRetweetTitle(string $page): string
+    public function getRetweetTitle(): string
     {
         $result = "";
         $count = 0;
-        $followersByRetweetedTweet = $this->getFollowersByRetweetedTweet();
+        $numberFollowersByRetweetedTweet = $this->getFollowersByRetweetedTweet()->count();
+        $usersForRetweetedTitle = $this->getUsersForRetweetTitle();
+        $isUserAuth = $this->isRetweetedBy(auth()->user()) ? 1 : 0;
 
-        if (
-            ($page === "profile" && $this->isRetweetedBy(auth()->user()) && $this->user_id !== auth()->id()) ||
-            ($page === "home" && $this->isRetweetedBy(auth()->user()) && $this->user_id !== auth()->id())
-        ) {
-            $result = $this->getUserLinkForRetweet(
-                $result,
-                auth()->user()->path(),
-                "You",
-                $count
+        foreach ($usersForRetweetedTitle as $userForRetweetedTitle) {
+            $result .= $this->getUserLinkForRetweet(
+                $userForRetweetedTitle->path(),
+                $userForRetweetedTitle->id === auth()->id() ? "You" : $userForRetweetedTitle->name ,
             );
+            $count++;
 
-            if ($followersByRetweetedTweet->count() === 1) {
-                $result .= " and ";
-                $result = $this->getUserLinkForRetweet(
-                    $result,
-                    $followersByRetweetedTweet->first()->path(),
-                    $followersByRetweetedTweet->first()->name,
-                    $count
-                );
+            if ($count === 1) {
+                $numberUsersOfRetweetedTweet = $numberFollowersByRetweetedTweet + $isUserAuth;
+                if ($usersForRetweetedTitle->count() === 2 && $numberUsersOfRetweetedTweet === 2) {
+                    $result .= " and ";
+                } else if ($numberUsersOfRetweetedTweet > 2){
+                    $result .= ", ";
+                }
             }
         }
 
-        if ($followersByRetweetedTweet->count()) {
-            if ($this->isRetweetedBy(auth()->user()) && $this->user_id !== auth()->id()) {
-                $result .= ', ';
-            }
+        $otherRetweetedFollowers = $numberFollowersByRetweetedTweet - $count + $isUserAuth;
 
-            $result = $this->getUserLinkForRetweet(
-                $result,
-                $followersByRetweetedTweet->first()->path(),
-                $followersByRetweetedTweet->first()->name,
-                $count
-            );
-            if (
-                ($followersByRetweetedTweet->count() > 1 && !$this->isRetweetedBy(auth()->user())) ||
-                ($followersByRetweetedTweet->count() === 1 && $this->isRetweetedBy(auth()->user())) ||
-                ($followersByRetweetedTweet->count() > 1 && $this->user_id === auth()->id())
-            ) {
-                $result .= ', ';
-                $result = $this->getUserLinkForRetweet(
-                    $result,
-                    $followersByRetweetedTweet->skip(1)->first()->path(),
-                    $followersByRetweetedTweet->skip(1)->first()->name,
-                    $count
-                );
-            }
-
-            $result .= " and ". $this->retweets->count() - $count ." others";
+        if ($otherRetweetedFollowers > 0) {
+            $result .= " and " . $otherRetweetedFollowers ." other follower" . ($otherRetweetedFollowers === 1 ? "" : "s");
         }
 
         $result .= " retweeted";
@@ -126,19 +102,39 @@ class Tweet extends Model
     }
 
     /**
-     * @param string $result
      * @param string $link
      * @param string $name
-     * @param int $count
      * @return string
      */
-    private function getUserLinkForRetweet(string $result, string $link, string $name, int &$count): string
+    private function getUserLinkForRetweet(string $link, string $name): string
     {
-        $result .= "<a class='font-bold hover:underline' href=" . $link . ">";
+        $result = "<a class='font-bold hover:underline' href=" . $link . ">";
         $result .= $name;
         $result .= "</a>";
 
-        $count++;
         return $result;
+    }
+
+    /**
+     * @return Collection
+     */
+    private function getUsersForRetweetTitle(): Collection
+    {
+        $users = [];
+        $followersByRetweetedTweet = $this->getFollowersByRetweetedTweet();
+        $numberFollowersByRetweetedTweet = $followersByRetweetedTweet->count();
+
+        if ($this->isRetweetedBy(auth()->user())) {
+            $users[] = auth()->user();
+        }
+
+        for ($i = 0; $i < $numberFollowersByRetweetedTweet; $i++) {
+            $users[] = $followersByRetweetedTweet->skip($i)->first();
+            if (count($users) === 2) {
+                break;
+            }
+        }
+
+        return collect($users);
     }
 }

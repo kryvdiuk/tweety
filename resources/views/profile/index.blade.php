@@ -15,6 +15,18 @@
             <div>
                 <div class="font-bold text-2xl">{{ $user->name }}</div>
                 <div class="text-sm text-gray-600">Joined {{ $user->created_at->diffForHumans() }}</div>
+                <div class="flex">
+                    <div class="mr-2 cursor-pointer hover:underline">
+                        <a href="{{ $user->path() . "/following" }}">
+                            <span class="font-bold">{{ $user->followees->count() }}</span> Following
+                        </a>
+                    </div>
+                    <div class="cursor-pointer hover:underline">
+                        <a href="{{ $user->path() . "/followers" }}">
+                             <span class="font-bold">{{ $user->followers->count() }}</span> Followers
+                        </a>
+                    </div>
+                </div>
             </div>
             <div class="flex">
                 @can("edit", $user)

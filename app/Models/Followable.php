@@ -14,6 +14,13 @@ trait Followable
             ->withTimestamps();
     }
 
+    public function followers(): BelongsToMany
+    {
+        return $this
+            ->belongsToMany(User::class, "follows", "followee_id", "user_id")
+            ->withTimestamps();
+    }
+
     public function follow(User $user): Model
     {
         if (!auth()->check()) {
