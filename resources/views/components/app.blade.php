@@ -7,9 +7,7 @@
             <div class="mx-10 flex-1 mb-10" style="max-width: 700px">
                 {{ $slot }}
             </div>
-            <div class="lg:w-1/6 ml-4">
-                @include("_followees-board")
-            </div>
+            <div class="lg:w-1/6 ml-4"></div>
         </div>
     </main>
 </x-master>

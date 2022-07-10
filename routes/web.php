@@ -35,6 +35,8 @@ Route::middleware("auth")->group(function() {
     Route::get("/profile/{user:username}/edit", "ProfileController@edit")->middleware('can:edit,user');
     Route::patch("/profile/{user:username}", "ProfileController@update")->middleware('can:edit,user');
     Route::post("/profile/{user:username}/follow", "FollowsController@store");
+    Route::get('/profile/{user:username}/followers', 'FollowersController@index');
+    Route::get('/profile/{user:username}/followees', 'FolloweesController@index');
 });
 
 

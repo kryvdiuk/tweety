@@ -17,7 +17,7 @@
                 <div class="text-sm text-gray-600">Joined {{ $user->created_at->diffForHumans() }}</div>
                 <div class="flex">
                     <div class="mr-2 cursor-pointer hover:underline">
-                        <a href="{{ $user->path() . "/following" }}">
+                        <a href="{{ $user->path() . "/followees" }}">
                             <span class="font-bold">{{ $user->followees->count() }}</span> Following
                         </a>
                     </div>
